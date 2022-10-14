@@ -14,7 +14,8 @@ const userConnected = async (socket, io) => {
 
 const userDisconnected = async (socket, io) => {
   const user = await Users.getBySocketId(socket.id)
-  await Users.deleteById(user.id)
+  if(user)
+    await Users.deleteById(user.id)
   const allUser = await Users.getAll()
   // Envio todos los usuarios a todos los sockets
   io.sockets.emit('all users', allUser)
