@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,600;1,700;1,900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="/socket.io/socket.io.js" ></script>
+    <title>Desafio 06 - Websockets</title>
+</head>
+<body>
+    <main>
+      <div id="createProduct">
+        <h1 id="createProduct__title">Ingrese producto</h1>
+        <form id="createProduct__form">
+          <input type="text" name="title" placeholder="Titulo" class="createProduct__input">
+          <input type="price" name="price" placeholder="Precio" class="createProduct__input">
+          <input type="text" name="img" placeholder="Link de la imagen" class="createProduct__input">
+          <button type="submit" id="createProduct__submit">Ingresar</button>
+        </form>
+      </div>
+      <!-- Plantilla de productos handlebars obtenida mediante fetch -->
+      <div id="chat">
+        <h2 id="chat__title">Chat</h2>
+        <form id="alias__form">
+          <input type="text" name="alias" placeholder="Alias">
+          <button type="submit" id="alias__submit">Cambiar alias</button>
+        </form>
+        <div id="chat__display">
+        </div>
+        <form id="textMsg__form">
+          <input type="text" name="textMsg" placeholder="Mensaje" id="textMsg__inp">
+          <button type="submit" id="textMsg__submit">Enviar</button>
+        </form>
+
+      </div>
+    </main>
+    <script src="/assets/js/main.js" ></script>
+</body>
+</html>

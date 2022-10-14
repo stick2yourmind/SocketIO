@@ -6,9 +6,9 @@ class Container{
     constructor(archivo) {
       try {
         this.filepath = path.join(process.cwd(), `/db/${archivo}.json`)
-        fSync.readFileSync(this.filepath,'utf-8')
+        fSync.writeFileSync(this.filepath, '[]')
         } catch (error) {
-          fSync.writeFileSync(this.filepath, '[]')
+          console.log(`Error en el constructor: ${error.message}`)
         }
     }
 
@@ -26,22 +26,38 @@ class Container{
       }
     }
 
-    async save(object){
+    async save(payload){
       try {
         const { newId, data } = await this.getData()
-        data.push( {...object, id: newId} )
+        data.push( {...payload, id: newId} )
         await fs.writeFile(this.filepath, JSON.stringify(data, null, 2))
         
       } catch (error) {
         console.log(`Error al guardar un objeto: ${error.message}`)
         
       }
-    }   
-
-    async getById(number) {
+    }
+    
+    async updateById(payload, id) {
       try {
         const { data } = await this.getData()
-        const foundData = data.find( element => element.id === number )
+        const indexFound = data.findIndex( element => element.id === Number(id))
+        // Caso no existe objeto con el id indicado
+        if( indexFound === -1)
+          throw new Error('Elemento no encontrado')
+        // Reemplazo el elemento indicado
+        data.splice(indexFound, 1, {...payload, id})
+        await fs.writeFile(this.filepath, JSON.stringify(data, null, 2))
+
+      } catch (error) {
+        console.log(`Error al eliminar un objeto: ${error.message}`)
+      }
+    }
+
+    async getById(id) {
+      try {
+        const { data } = await this.getData()
+        const foundData = data.find( element => element.id === Number(id) )
         if(!foundData)
           throw new Error('Elemento no encontrado')
         return foundData
@@ -59,17 +75,17 @@ class Container{
       }
     }
 
-    async deleteById(number) {
+    async deleteById(id) {
       try {
 
         const { data } = await this.getData()
-        const indexFound = data.findIndex( element => element.id === number)
+        const indexFound = data.findIndex( element => Number(element.id) === Number(id))
         // Caso no existe objeto con el id indicado
         if( indexFound === -1)
           throw new Error('Elemento no encontrado')
         // Elimino el elemento indicado
         data.splice(indexFound, 1)
-        await fs.writeFile(this.filepath, JSON.stringify(data))
+        await fs.writeFile(this.filepath, JSON.stringify(data, null, 2))
 
       } catch (error) {
         console.log(`Error al eliminar un objeto: ${error.message}`)

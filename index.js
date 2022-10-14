@@ -1,19 +1,48 @@
-const Container = require('./models/container')
+const express = require('express')
+const { Server: HttpServer } = require('http')
+const { Server: SocketIOServer }  = require('socket.io')
+const routers = require('./routes/index')
+
+const { userConnected, userDisconnected, userChangeAlias } = require('./handlers/user.handler')
+const { newMessage } = require('./handlers/message.handler')
+
+const app = express ()
+const httpServer = new HttpServer(app)
+const io = new SocketIOServer(httpServer)
+
+const PORT = 8080
 
 
-const Productos = new Container('productos')
+// Middlewares
+app.use(express.static('./public'))
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+app.use('/api', routers)
 
+httpServer.listen(PORT, () =>{
+  console.log(`Server running on port: ${PORT}`)
+})
 
-const main = async () => {
-  await Productos.save({
-    title: "Salsa De Maracuya Frutas Del Sur Con Semillas X 1kg Sin Tacc",
-    price: 1169.10,
-    image: "https://http2.mlstatic.com/D_NQ_NP_2X_877687-MLA41384381722_042020-F.webp"
+io.on('connection', socket => {
+  // Agrego al usuario conectado
+  userConnected(socket, io)
+
+  // Evento disconnect
+  socket.on('disconnect', reason => {
+    console.log("🚀 ~ file: index.js ~ line 33 ~ reason", reason)
+    userDisconnected(socket, io)
   })
-  // console.log(await Productos.getAll())
-  // await Productos.deleteById(3)
-  console.log(await Productos.getById(2))
-}
 
-main()
+  // Evento new msg
+  socket.on('new msg', newMsg => {
+    newMessage(socket, io, newMsg)
+  })
+
+  // Evento change alias
+  socket.on('change alias', alias => {
+    userChangeAlias(socket, io, alias)
+  })
+
+})
+
