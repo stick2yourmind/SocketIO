@@ -101,3 +101,36 @@ main{
   font-size: 0.5rem;
   text-align: right;
 }
+
+#products {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f0f8ff7d;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 2rem 0;
+  width: 42rem;
+  min-height: 10rem;
+}
+#products__title {
+  color: aliceblue;
+}
+.product {
+  display: flex;
+  margin: 1rem 0;
+}
+.product__info {
+    padding: 0 1rem;
+}
+.product__img {
+  width: 6rem;
+  height: 6rem;
+  object-fit: contain;
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+.product__title {
+  max-width: 27rem;
+}

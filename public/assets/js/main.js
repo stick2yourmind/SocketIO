@@ -1,13 +1,23 @@
 const socket = io('http://localhost:8080')
 
+/* -------------------------------------------------------------------------- */
+/*                             VARIABLES GLOBALES                             */
+/* -------------------------------------------------------------------------- */
+let users = []
+let messages = []
+let products = []
+/* -------------------------------------------------------------------------- */
+/*                             REFERENCIAS DEL DOM                            */
+/* -------------------------------------------------------------------------- */
 const createProductForm = document.getElementById('createProduct__form')
 const aliasForm = document.getElementById('alias__form')
 const textMsgForm = document.getElementById('textMsg__form')
 const chatDisplay = document.getElementById('chat__display')
+const productSection = document.getElementById('products')
 
-let users = []
-let messages = []
-
+/* -------------------------------------------------------------------------- */
+/*                              RENDERS DEL CHAT                              */
+/* -------------------------------------------------------------------------- */
 const getNameBySocketId = (socketId) => {
   const foundData = users.find( element => element.socketId === socketId )
   if(foundData === undefined)
@@ -32,13 +42,34 @@ const renderMsg = ({msg, socketId}) => {
   chatDisplay.appendChild(chatMsg)
 }
 
+/* -------------------------------------------------------------------------- */
+/*                            RENDERS DE PRODUCTOS                            */
+/* -------------------------------------------------------------------------- */
+const cleanProducts = () => {
+  productSection.innerHTML = ""
+}
+const renderProducts = async (products) => {
+  let response = await fetch('/assets/templates/products.template.handlebars')
+  const template = await response.text()
+  const templateCompiled = Handlebars.compile(template)
+  const html = templateCompiled({ products })
+  productSection.innerHTML = html
+}
+
+/* -------------------------------------------------------------------------- */
+/*                            LISTENER DE PRODUCTOS                           */
+/* -------------------------------------------------------------------------- */
 createProductForm.addEventListener('submit', (e) => {
   e.preventDefault()
   const formData = new FormData(createProductForm)
   const formValues = Object.fromEntries(formData)
   createProductForm.reset()
+  socket.emit('new product', formValues)
 })
 
+/* -------------------------------------------------------------------------- */
+/*                             LISTENERS DEL CHAT                             */
+/* -------------------------------------------------------------------------- */
 aliasForm.addEventListener('submit', (e) => {
   e.preventDefault()
   const formData = new FormData(aliasForm)
@@ -53,8 +84,10 @@ textMsgForm.addEventListener('submit', (e) => {
   socket.emit('new msg', formValues.textMsg)
 })
 
-
-socket.on('all messages', async (allMsg) => {
+/* -------------------------------------------------------------------------- */
+/*                              EVENTOS DEL CHAT                              */
+/* -------------------------------------------------------------------------- */
+socket.on('all messages', allMsg => {
 messages = allMsg
 cleanChat()
  for (msgData of allMsg){
@@ -63,11 +96,20 @@ cleanChat()
  chatDisplay.scrollTo(0, chatDisplay.scrollHeight)
 })
 
-socket.on('all users', async (allUser) => {
+socket.on('all users', allUser => {
   users = allUser
   cleanChat()
   for (msgData of messages){
     renderMsg(msgData)
   }
   chatDisplay.scrollTo(0, chatDisplay.scrollHeight)
+})
+
+/* -------------------------------------------------------------------------- */
+/*                            EVENTOS DE PRODUCTOS                            */
+/* -------------------------------------------------------------------------- */
+socket.on('all products', allProduct => {
+  products = allProduct
+  cleanProducts()
+  renderProducts(allProduct)
 })

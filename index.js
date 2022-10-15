@@ -5,6 +5,7 @@ const routers = require('./routes/index')
 
 const { userConnected, userDisconnected, userChangeAlias } = require('./handlers/user.handler')
 const { newMessage } = require('./handlers/message.handler')
+const { newProduct } = require('./handlers/product.handler')
 
 const app = express ()
 const httpServer = new HttpServer(app)
@@ -28,21 +29,25 @@ io.on('connection', socket => {
   // Agrego al usuario conectado
   userConnected(socket, io)
 
-  // Evento disconnect
+  /* ---------------------------- Evento disconnect --------------------------- */
   socket.on('disconnect', reason => {
     console.log("🚀 ~ file: index.js ~ line 33 ~ reason", reason)
     userDisconnected(socket, io)
   })
 
-  // Evento new msg
+  /* ----------------------------- Evento new msg ----------------------------- */
   socket.on('new msg', newMsg => {
     newMessage(socket, io, newMsg)
   })
 
-  // Evento change alias
+  /* --------------------------- Evento change alias -------------------------- */
   socket.on('change alias', alias => {
     userChangeAlias(socket, io, alias)
   })
 
+  /* --------------------------- Evento new product --------------------------- */
+  socket.on('new product', newProd => {
+    newProduct(socket, io, newProd)
+  })
 })
 

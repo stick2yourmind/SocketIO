@@ -1,15 +1,19 @@
 const Users = require('../models/user/user.model')
 const Messages = require('../models/message/message.model')
+const Products = require('../models/product/product.model')
 
 const userConnected = async (socket, io) => {
   console.log("Usuario conectado: ", socket.id)
   await Users.save({ name: null, socketId: socket.id})
   const allMsg = await Messages.getAll()
   const allUser = await Users.getAll()
+  const allProducts = await Products.getAll()
   // Envio todos los usuarios a todos los sockets
   io.sockets.emit('all users', allUser)
   // Envio todos los mensajes a todos los sockets
   io.sockets.emit('all messages', allMsg)
+  // Envio todos los productos a todos los sockets
+  socket.emit('all products', allProducts)
 }
 
 const userDisconnected = async (socket, io) => {
