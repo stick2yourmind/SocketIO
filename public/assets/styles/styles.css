@@ -96,6 +96,13 @@ main{
   background-color: #a62b81bf;
   align-self: flex-end;
 }
+
+.chat__date{
+  font-size: 0.5rem;
+  color: #014772;
+  font-weight: bold;
+}
+
 .chat__owner{
   color: aliceblue;
   font-size: 0.5rem;
